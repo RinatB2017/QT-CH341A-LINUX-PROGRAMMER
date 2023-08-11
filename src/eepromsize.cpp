@@ -15,13 +15,13 @@ EepromSize::~EepromSize()
 
 void EepromSize::on_buttonBox_accepted()
 {
-// QListWidget.currentItem();
-//    int itemno =   QListWidget::SelectItems;
-//    QString str = QString::number(itemno);
-//    QMessageBox::about(this, "Title", str);
-//     QString str = QListWidget::currentItem()->text();
- //           QListWidget::currentItem(ListWidget)->text();
- //    QMessageBox::about(this, "Title", str );
+    // QListWidget.currentItem();
+    //    int itemno =   QListWidget::SelectItems;
+    //    QString str = QString::number(itemno);
+    //    QMessageBox::about(this, "Title", str);
+    //     QString str = QListWidget::currentItem()->text();
+    //           QListWidget::currentItem(ListWidget)->text();
+    //    QMessageBox::about(this, "Title", str );
 }
 void EepromSize::show()
 {
@@ -33,19 +33,15 @@ void EepromSize::accept()
     emit accepted();
     QString chipmodel = ui->listWidget->currentItem()->text();
     emit listWidget_click(chipmodel);
-//    QString Size = EepromSize::on_listWidget_clicked;
-//    QMessageBox::about(this, "EEPROM type:", "dddd" );
+    //    QString Size = EepromSize::on_listWidget_clicked;
+    //    QMessageBox::about(this, "EEPROM type:", "dddd" );
     QDialog::hide();
 }
 
-
 void EepromSize::listWidget_clicked()
 {
-
     //QString chipmodel = ui->listWidget->currentItem()->text();
-//    QMessageBox::about(this, "EEPROM type:", chipmodel );
+    //    QMessageBox::about(this, "EEPROM type:", chipmodel );
 
-   // emit listWidget_click(chipmodel);
-
+    // emit listWidget_click(chipmodel);
 }
-

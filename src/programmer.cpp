@@ -22,21 +22,17 @@ uint8_t *readbuf1 = NULL;
 void Programmer::barNotshowing()
 {
     ui->progressBar->setVisible(false);
-
 }
 
 void Programmer::barShowing()
 {
     ui->progressBar->setVisible(true);
-
 }
 
 void Programmer::setValue(int val_bar)
 {
-
     ui->progressBar->setValue(val_bar);
 }
-
 
 void Programmer::setTxt(QString prog_txt)
 {
@@ -51,17 +47,15 @@ void Programmer::setImg(bool img)
     pix_off = QPixmap(":/images/not_found.png");
     if (img)
     {
-      ui-> label ->setPixmap(pix_on);
-      ui->progressBar->setVisible(true);
+        ui-> label ->setPixmap(pix_on);
+        ui->progressBar->setVisible(true);
     }
     else
     {
-      ui-> label ->setPixmap(pix_off);
-      ui->progressBar->setVisible(false);
+        ui-> label ->setPixmap(pix_off);
+        ui->progressBar->setVisible(false);
     }
 }
-
-
 
 Programmer::Programmer(QWidget *parent) :
     QDialog(parent),
@@ -71,15 +65,15 @@ Programmer::Programmer(QWidget *parent) :
     pix_on = QPixmap(":/images/ch341_to_form_150_150.png");
     pix_off = QPixmap(":/images/not_found.png");
 
-  ui->setupUi(this);
+    ui->setupUi(this);
 
-  ui->textEdit->append("Found..");
-  ui->progressBar->setMaximum(100);
-  ui->progressBar->setValue(0);
-  ui->label->setPixmap(pix_on);
+    ui->textEdit->append("Found..");
+    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(0);
+    ui->label->setPixmap(pix_on);
 
-  //QMessageBox::about(this, "Title", QString::number(ii));
-// ui->progressBar->setValue(value;);
+    //QMessageBox::about(this, "Title", QString::number(ii));
+    // ui->progressBar->setValue(value;);
 }
 
 Programmer::~Programmer()
@@ -89,8 +83,5 @@ Programmer::~Programmer()
 
 void Programmer::on_buttonBox_accepted()
 {
-//ui->label->setPixmap(pix_off);
+    //ui->label->setPixmap(pix_off);
 }
-
-
-
