@@ -27,7 +27,7 @@ private:
     QByteArray getContent(int comboIndex, const QString &input);
     qint64 replaceOccurrence(qint64 idx, const QByteArray &replaceBa);
 
-    QHexEdit *_hexEdit;
+    QHexEdit *_hexEdit = nullptr;
     QByteArray _findBa;
 };
 

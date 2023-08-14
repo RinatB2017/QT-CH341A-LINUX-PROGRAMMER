@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>SearchDialog</class>
  <widget class="QDialog" name="SearchDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>436</width>
-    <height>223</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>QHexEdit - Find/Replace</string>
   </property>

@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>OptionsDialog</class>
  <widget class="QDialog" name="OptionsDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>347</width>
-    <height>553</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>QHexEdit - Options</string>
   </property>

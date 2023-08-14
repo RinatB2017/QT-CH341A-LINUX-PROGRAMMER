@@ -14,11 +14,10 @@
 #include <string.h>
 #include <iostream>
 #include <stdio.h>
+#include <libusb-1.0/libusb.h>
+
 using namespace std;
-extern "C"
-{
-  #include <libusb-1.0/libusb.h>
-}
+
 //INIT
 #define USB_LOCK_VENDOR             0x1a86 // Dev : (1a86) QinHeng Electronics
 #define USB_LOCK_PRODUCT            0x5512 //       (5512) CH341A in i2c mode
@@ -43,7 +42,8 @@ extern "C"
 #define	mCH341A_CMD_I2C_STM_END		0x00
 #define CH341_EEPROM_READ_CMD_SZ    0x65
 #define BULK_WRITE_ENDPOINT         0x02   /* bEndpointAddress 0x02  EP 2 OUT (Bulk)*/
-struct EEPROM {
+struct EEPROM
+{
     char const *name;
     uint32_t size;
     uint16_t page_size;
@@ -52,18 +52,18 @@ struct EEPROM {
 };
 
 const static struct EEPROM eepromlist[] = {
-  { "24c01",   128,     8,  1, 0x00}, // 16 pages of 8 bytes each = 128 bytes
-  { "24c02",   256,     8,  1, 0x00}, // 32 pages of 8 bytes each = 256 bytes
-  { "24c04",   512,    16,  1, 0x01}, // 32 pages of 16 bytes each = 512 bytes
-  { "24c08",   1024,   16,  1, 0x03}, // 64 pages of 16 bytes each = 1024 bytes
-  { "24c16",   2048,   16,  1, 0x07}, // 128 pages of 16 bytes each = 2048 bytes
-  { "24c32",   4096,   32,  2, 0x00}, // 32kbit = 4kbyte
-  { "24c64",   8192,   32,  2, 0x00},
-  { "24c128",  16384,  32/*64*/,  2, 0x00},
-  { "24c256",  32768,  32/*64*/,  2, 0x00},
-  { "24c512",  65536,  32/*128*/, 2, 0x00},
-  { "24c1024", 131072, 32/*128*/, 2, 0x01},
-  { "", 0, 0, 0, 0 }
+{ "24c01",   128,     8,  1, 0x00}, // 16 pages of 8 bytes each = 128 bytes
+{ "24c02",   256,     8,  1, 0x00}, // 32 pages of 8 bytes each = 256 bytes
+{ "24c04",   512,    16,  1, 0x01}, // 32 pages of 16 bytes each = 512 bytes
+{ "24c08",   1024,   16,  1, 0x03}, // 64 pages of 16 bytes each = 1024 bytes
+{ "24c16",   2048,   16,  1, 0x07}, // 128 pages of 16 bytes each = 2048 bytes
+{ "24c32",   4096,   32,  2, 0x00}, // 32kbit = 4kbyte
+{ "24c64",   8192,   32,  2, 0x00},
+{ "24c128",  16384,  32/*64*/,  2, 0x00},
+{ "24c256",  32768,  32/*64*/,  2, 0x00},
+{ "24c512",  65536,  32/*128*/, 2, 0x00},
+{ "24c1024", 131072, 32/*128*/, 2, 0x01},
+{ "", 0, 0, 0, 0 }
 };
 
 struct answer {
@@ -87,7 +87,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
-
 protected:
     void closeEvent(QCloseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
@@ -108,7 +107,7 @@ private slots:
     void setSize(qint64 size);
     void showOptionsDialog();
     void showSearchDialog();
-//
+    //
     void showEepromSize();
     void showProgrammer();
     int readActBt();
@@ -118,10 +117,9 @@ private slots:
     void setChipType(QString ch_type);
     void setValue(int);
 
-
 signals:
     void workingPercentChanged(qint32 percent);
-//
+
 private:
     void init();
     void createActions();
@@ -140,46 +138,46 @@ private:
     QFile file;
     bool isUntitled;
 
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *helpMenu;
+    QMenu *fileMenu = nullptr;
+    QMenu *editMenu = nullptr;
+    QMenu *helpMenu = nullptr;
 
-    QToolBar *fileToolBar;
-    QToolBar *editToolBar;
+    QToolBar *fileToolBar = nullptr;
+    QToolBar *editToolBar = nullptr;
 
-    QAction *openAct;
-//
-    QAction *readAct;
-    QAction *writeAct;
-    QAction *programmerAct;
-//
-    QAction *selectAct;
-    QAction *saveAct;
-    QAction *saveAsAct;
-    QAction *saveReadable;
-    QAction *closeAct;
-    QAction *exitAct;
+    QAction *openAct = nullptr;
+    //
+    QAction *readAct = nullptr;
+    QAction *writeAct = nullptr;
+    QAction *programmerAct = nullptr;
+    //
+    QAction *selectAct = nullptr;
+    QAction *saveAct = nullptr;
+    QAction *saveAsAct = nullptr;
+    QAction *saveReadable = nullptr;
+    QAction *closeAct = nullptr;
+    QAction *exitAct = nullptr;
 
-    QAction *undoAct;
-    QAction *redoAct;
-    QAction *saveSelectionReadable;
+    QAction *undoAct = nullptr;
+    QAction *redoAct = nullptr;
+    QAction *saveSelectionReadable = nullptr;
 
-    QAction *aboutAct;
-    QAction *aboutQtAct;
-    QAction *optionsAct;
-    QAction *findAct;
-    QAction *findNextAct;
+    QAction *aboutAct = nullptr;
+    QAction *aboutQtAct = nullptr;
+    QAction *optionsAct = nullptr;
+    QAction *findAct = nullptr;
+    QAction *findNextAct = nullptr;
 
-    QHexEdit *hexEdit;
-    OptionsDialog *optionsDialog;
-    SearchDialog *searchDialog;
-//
-    EepromSize *eepromSize;
-    Programmer *programmer;
-    QLabel *lbChipType, *lbChipTypeName;
-    QLabel *lbAddress, *lbAddressName;
-    QLabel *lbOverwriteMode, *lbOverwriteModeName;
-    QLabel *lbSize, *lbSizeName;
+    QHexEdit *hexEdit = nullptr;
+    OptionsDialog *optionsDialog = nullptr;
+    SearchDialog *searchDialog = nullptr;
+    //
+    EepromSize *eepromSize = nullptr;
+    Programmer *programmer = nullptr;
+    QLabel *lbChipType, *lbChipTypeName = nullptr;
+    QLabel *lbAddress, *lbAddressName = nullptr;
+    QLabel *lbOverwriteMode, *lbOverwriteModeName = nullptr;
+    QLabel *lbSize, *lbSizeName = nullptr;
 };
 
 #endif

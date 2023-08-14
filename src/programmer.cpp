@@ -1,9 +1,7 @@
-#include "programmer.h"
-#include "ui_programmer.h"
-extern "C"
-{
+
+#include <QLabel>
+
 #include <libusb-1.0/libusb.h>
-}
 #include <sys/errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,10 +12,12 @@ extern "C"
 #include <limits.h>
 #include <sys/mman.h>
 #include <assert.h>
-#include <QLabel>
 
-FILE *debugout, *verbout;
-uint8_t *readbuf1 = NULL;
+#include "ui_programmer.h"
+#include "programmer.h"
+
+FILE *debugout, *verbout = nullptr;
+uint8_t *readbuf1 = nullptr;
 
 void Programmer::barNotshowing()
 {
@@ -71,17 +71,9 @@ Programmer::Programmer(QWidget *parent) :
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(0);
     ui->label->setPixmap(pix_on);
-
-    //QMessageBox::about(this, "Title", QString::number(ii));
-    // ui->progressBar->setValue(value;);
 }
 
 Programmer::~Programmer()
 {
     delete ui;
-}
-
-void Programmer::on_buttonBox_accepted()
-{
-    //ui->label->setPixmap(pix_off);
 }

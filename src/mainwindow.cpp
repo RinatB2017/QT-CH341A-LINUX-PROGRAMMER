@@ -27,6 +27,7 @@ struct libusb_device_handle *devHandle;
 int32_t currentConfig = 0;
 Counter a;
 QByteArray buf(65536,0xff);
+
 /*****************************************************************************/
 /*      c void's                                                             */
 /*****************************************************************************/
@@ -39,13 +40,16 @@ void ch341ReadCmdMarshall(uint8_t *buffer, uint32_t addr, struct EEPROM *eeprom_
     // Write address
     *ptr++ = (mCH341A_CMD_I2C_STM_OUT) | ((*eeprom_info).addr_size+1); // 2: I2C bus adddress + EEPROM address
     uint8_t msb_addr;
-    if ((*eeprom_info).addr_size >= 2) {
+    if ((*eeprom_info).addr_size >= 2)
+    {
         // 24C32 and more
         msb_addr = addr>>16 & (*eeprom_info).i2c_addr_mask;
         *ptr++ = (EEPROM_I2C_BUS_ADDRESS | msb_addr)<<1; // 3
         *ptr++ = (addr>>8 & 0xFF); // 4
         *ptr++ = (addr>>0 & 0xFF); // 5
-    } else {
+    }
+    else
+    {
         // 24C16 and less
         msb_addr = addr>>8 & (*eeprom_info).i2c_addr_mask;
         *ptr++ = (EEPROM_I2C_BUS_ADDRESS | msb_addr)<<1; // 3
@@ -90,7 +94,8 @@ void ch341ReadCmdMarshall(uint8_t *buffer, uint32_t addr, struct EEPROM *eeprom_
 
 //  ch341setstream()
 //  set the i2c bus speed (speed: 0 = 20kHz; 1 = 100kHz, 2 = 400kHz, 3 = 750kHz)
-int32_t ch341setstream(struct libusb_device_handle *devHandle, uint32_t speed) {
+int32_t ch341setstream(struct libusb_device_handle *devHandle, uint32_t speed)
+{
     int32_t ret;
     uint8_t ch341outBuffer[EEPROM_READ_BULKOUT_BUF_SZ], *outptr;
     int32_t actuallen = 0;
@@ -103,14 +108,17 @@ int32_t ch341setstream(struct libusb_device_handle *devHandle, uint32_t speed) {
 
     ret = libusb_bulk_transfer(devHandle, BULK_WRITE_ENDPOINT, ch341outBuffer, 3, &actuallen, DEFAULT_TIMEOUT);
 
-    if(ret < 0) {
+    if(ret < 0)
+    {
         return -1;
     }
     return 0;
 }
 
-void cbBulkIn(struct libusb_transfer *transfer) {
-    switch(transfer->status) {
+void cbBulkIn(struct libusb_transfer *transfer)
+{
+    switch(transfer->status)
+    {
     case LIBUSB_TRANSFER_COMPLETED:
         // display the contents of the BULK IN data buffer
         memcpy(readbuf + byteoffset, transfer->buffer, transfer->actual_length);
@@ -122,7 +130,8 @@ void cbBulkIn(struct libusb_transfer *transfer) {
     return;
 }
 
-void cbBulkOut(struct libusb_transfer *transfer) {
+void cbBulkOut(struct libusb_transfer *transfer)
+{
     syncackpkt = 1;
     //pr_error = pr_error + "\ncbBulkOut(): Sync/Ack received: status " + QString::number(transfer->status) +"\n";
     return;
@@ -130,16 +139,19 @@ void cbBulkOut(struct libusb_transfer *transfer) {
 
 // parseEEPsize()
 // passed an EEPROM name (case-sensitive), returns its byte size
-int32_t parseEEPsize(char* eepromname, struct EEPROM *eeprom) {
+int32_t parseEEPsize(char* eepromname, struct EEPROM *eeprom)
+{
     int i;
 
     for(i=0; eepromlist[i].size; i++)
-        if(strstr(eepromlist[i].name, eepromname)) {
+        if(strstr(eepromlist[i].name, eepromname))
+        {
             memcpy(eeprom, &(eepromlist[i]), sizeof(struct EEPROM));
             return(eepromlist[i].size);
         }
     return -1;
 }
+
 /*****************************************************************************/
 /*  INIT CH341A                                                              */
 /*****************************************************************************/
@@ -184,7 +196,8 @@ answer init_ch341()
             if(libusb_kernel_driver_active(devHandle, DEFAULT_INTERFACE))
             {
                 ret = libusb_detach_kernel_driver(devHandle, DEFAULT_INTERFACE);
-                if(ret) {
+                if(ret)
+                {
                     ans.ans_txt = ans.ans_txt +"Failed to detach kernel driver.\n";
                     ans.ans_byte = 0;
                     return ans; //return 0;
@@ -192,7 +205,8 @@ answer init_ch341()
 
             }
             ret = libusb_get_configuration(devHandle, &currentConfig);
-            if(ret) {
+            if(ret)
+            {
                 ans.ans_txt = ans.ans_txt +"Failed to get current device configuration.\n";
                 ans.ans_byte = 0;
                 return ans;
@@ -202,7 +216,8 @@ answer init_ch341()
             if(currentConfig != DEFAULT_CONFIGURATION)
                 ret = libusb_set_configuration(devHandle, currentConfig);
 
-            if(ret) {
+            if(ret)
+            {
                 ans.ans_txt = ans.ans_txt +"Failed to set device configuration to " + QString::number(DEFAULT_CONFIGURATION) +"\n";
                 ans.ans_byte = 0;
                 return ans;
@@ -211,7 +226,8 @@ answer init_ch341()
 
             ret = libusb_claim_interface(devHandle, DEFAULT_INTERFACE); // interface 0
 
-            if(ret) {
+            if(ret)
+            {
                 ans.ans_txt = ans.ans_txt +"Failed to claim interface" + QString::number(DEFAULT_INTERFACE) + "\n";
                 ans.ans_byte = 0;
                 return ans;
@@ -219,7 +235,8 @@ answer init_ch341()
 
             ret = libusb_get_descriptor(devHandle, LIBUSB_DT_DEVICE, 0x00, ch341DescriptorBuffer, 0x12);
 
-            if(ret < 0) {
+            if(ret < 0)
+            {
                 ans.ans_txt = ans.ans_txt +"Failed to get device descriptor.\n";
                 ans.ans_byte = 0;
                 return ans;
@@ -231,8 +248,8 @@ answer init_ch341()
                 ans.ans_txt = ans.ans_txt + (QString::number(ch341DescriptorBuffer[i], 16).rightJustified(2, '0')) +" ";
             ans.ans_txt = ans.ans_txt +"\n";
 
-
-            if(ch341setstream(devHandle, bus_speed) < 0) {
+            if(ch341setstream(devHandle, bus_speed) < 0)
+            {
                 ans.ans_txt = ans.ans_txt +  "Couldnt set i2c bus speed\n";
                 ans.ans_byte = 0;
             }
@@ -242,13 +259,15 @@ answer init_ch341()
     }
     return ans;
 }
+
 /*****************************************************************************/
 /* CLOSE CH341A                                                              */
 /*****************************************************************************/
 answer close_ch341a(struct libusb_device_handle *devHandle)
 {
     answer ans;
-    if(devHandle) {
+    if(devHandle)
+    {
         libusb_release_interface(devHandle, DEFAULT_INTERFACE);
         ans.ans_txt =  "Released device interface " + QString::number(DEFAULT_INTERFACE) +"\n";
         libusb_close(devHandle);
@@ -259,7 +278,6 @@ answer close_ch341a(struct libusb_device_handle *devHandle)
     }
     return ans;
 }
-
 
 /*****************************************************************************/
 /* Public methods */
@@ -279,13 +297,11 @@ void MainWindow::closeEvent(QCloseEvent *)
     writeSettings();
 }
 
-
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasUrls())
         event->accept();
 }
-
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
@@ -321,10 +337,9 @@ void MainWindow::dataChanged()
 void MainWindow::open()
 {
     QString fileName = QFileDialog::getOpenFileName(this);
-    if (!fileName.isEmpty()) {
+    if (!fileName.isEmpty())
+    {
         loadFile(fileName);
-
-
     }
 }
 
@@ -341,7 +356,8 @@ void MainWindow::findNext()
 
 bool MainWindow::save()
 {
-    if (isUntitled) {
+    if (isUntitled)
+    {
         return saveAs();
     } else {
         return saveFile(curFile);
@@ -364,7 +380,8 @@ void MainWindow::saveSelectionToReadableFile()
     if (!fileName.isEmpty())
     {
         QFile file(fileName);
-        if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        if (!file.open(QFile::WriteOnly | QFile::Text))
+        {
             QMessageBox::warning(this, tr("QHexEdit"),
                                  tr("Cannot write file %1:\n%2.")
                                  .arg(fileName)
@@ -386,7 +403,8 @@ void MainWindow::saveToReadableFile()
     if (!fileName.isEmpty())
     {
         QFile file(fileName);
-        if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        if (!file.open(QFile::WriteOnly | QFile::Text))
+        {
             QMessageBox::warning(this, tr("QHexEdit"),
                                  tr("Cannot write file %1:\n%2.")
                                  .arg(fileName)
@@ -401,16 +419,16 @@ void MainWindow::saveToReadableFile()
         statusBar()->showMessage(tr("File saved"), 2000);
     }
 }
-//
+
 void Counter::setValue(int value)
 {
-    if (value != m_value) {
+    if (value != m_value)
+    {
         m_value = value;
         emit valueChanged(value);
     }
 }
 
-//
 void MainWindow::setChipType(QString ch_type)
 {
     lbChipType->setText(ch_type);
@@ -436,7 +454,6 @@ void MainWindow::setChipType(QString ch_type)
         hexEdit->setData(buf);
     }
 }
-//
 
 void MainWindow::setAddress(qint64 address)
 {
@@ -467,11 +484,12 @@ void MainWindow::showSearchDialog()
 {
     searchDialog->show();
 }
-//
+
 void MainWindow::showEepromSize()
 {
     eepromSize->show();
 }
+
 void MainWindow::showProgrammer()
 {
     programmer->show();
@@ -481,6 +499,7 @@ void MainWindow::setValue(int val)
 {
     programmer->setValue(val);
 }
+
 /*****************************************************************************/
 /* Private Methods */
 /*****************************************************************************/
@@ -501,8 +520,6 @@ void MainWindow::init()
     programmer = new Programmer(this);
     QObject::connect(&a, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
 
-    //
-
     createActions();
     createMenus();
     createToolBars();
@@ -515,7 +532,7 @@ void MainWindow::init()
 
     setWindowTitle("I2C EEPROM Programmer");
 }
-//
+
 int MainWindow::readActBt()
 {
     answer ans_info;
@@ -554,7 +571,8 @@ int MainWindow::readActBt()
     //INIT PROGRAMMER
     pr_error ="";
     readbuf = (uint8_t *) malloc(MAX_EEPROM_SIZE);   // space to store loaded EEPROM
-    if(!readbuf) {
+    if(!readbuf)
+    {
         pr_error = pr_error +  "Couldnt malloc space needed for EEPROM image\n";
         return -1;
     }
@@ -569,7 +587,6 @@ int MainWindow::readActBt()
 
     if (ans_info.ans_byte == 1)
     {
-
         bytestoread = eepromsize;
         memset(readbuf, 0xff, MAX_EEPROM_SIZE);
         pr_error = pr_error +"\nReading from EEPROM.\n";
@@ -595,18 +612,23 @@ int MainWindow::readActBt()
         pr_error = pr_error + "Submitted BULK OUT setup packet\n";
         programmer->setTxt(pr_error);
 
-        while (1) {
+        while (1)
+        {
             QApplication::processEvents();
             a.setValue(100*byteoffset/bytestoread);
             ret = libusb_handle_events_timeout(NULL, &tv);
-            if (ret < 0 || getnextpkt == -1) {          // indicates an error
+            if (ret < 0 || getnextpkt == -1)
+            {
+                // indicates an error
                 if (ret < 0)
                     pr_error = pr_error + "USB read error : " + QString(strerror(-ret)) + "\n";
                 libusb_free_transfer(xferBulkIn);
                 libusb_free_transfer(xferBulkOut);
                 return -1;//break;
             }
-            if(getnextpkt == 1) {                       // callback function reports a new BULK IN packet received
+            if(getnextpkt == 1)
+            {
+                // callback function reports a new BULK IN packet received
                 getnextpkt = 0;                         //   reset the flag
                 readpktcount++;                         //   increment the read packet counter
                 byteoffset += EEPROM_READ_BULKIN_BUF_SZ;
@@ -621,7 +643,8 @@ int MainWindow::readActBt()
                     syncackpkt = 0;
                 // if 4th packet received, we are at end of 0x80 byte data block,
                 // if it is not the last block, then resubmit request for data
-                if(readpktcount==4) {
+                if(readpktcount==4)
+                {
                     //                pr_error = pr_error + "\nSubmitting next transfer request to BULK OUT endpoint\n";
                     readpktcount = 0;
                     ch341ReadCmdMarshall(ch341outBuffer, byteoffset, &eeprom_info); // Fill output buffer
@@ -631,10 +654,7 @@ int MainWindow::readActBt()
                     // and re-submit next transfer request to BULK OUT endpoint
                 }
             }
-
-
         }
-
 
         //CLOSE DEVICE
         if (byteoffset>0)
@@ -706,11 +726,11 @@ int MainWindow::writeActBt()
     //INIT PROGRAMMER
     pr_error ="";
     readbuf = (uint8_t *) malloc(MAX_EEPROM_SIZE);   // space to store loaded EEPROM
-    if(!readbuf) {
+    if(!readbuf)
+    {
         pr_error = pr_error +  "Couldnt malloc space needed for EEPROM image\n";
         return -1;
     }
-
 
     //EEPROM MODEL SETTINGS
     if((eepromsize = parseEEPsize(e_name, &eeprom_info)) > 0)
@@ -734,12 +754,16 @@ int MainWindow::writeActBt()
         //while bytes
         pr_error = pr_error + "\nWritting to EEPROM\n";
         programmer->setTxt(pr_error);
-        while(bytes) {
+        while(bytes)
+        {
             outptr = i2cCmdBuffer;
-            if (address_size >= 2) {
+            if (address_size >= 2)
+            {
                 *outptr++ = (uint8_t) (0xa0 | (byteoffset >> 16 & address_mask<<1));  // EEPROM device address
                 *outptr++ = (uint8_t) (byteoffset >> 8 & 0xff);     // MSB (big-endian) byte address
-            } else {
+            }
+            else
+            {
                 *outptr++ = (uint8_t) (0xa0 | (byteoffset >> 8 & address_mask<<1));  // EEPROM device address
             }
             *outptr++ = (uint8_t) (byteoffset & 0xff);          // LSB of 16-bit    byte address
@@ -754,12 +778,15 @@ int MainWindow::writeActBt()
             uint16_t page_size_left = page_size + addrbytecount;
             uint8_t part_no = 0;
             uint8_t *i2cBufPtr = i2cCmdBuffer;
-            while(page_size_left) {
+            while(page_size_left)
+            {
                 uint8_t to_write = qMin(page_size_left, con28);
                 a.setValue(100*byteoffset/chipsize);
                 QApplication::processEvents();
                 *outptr++ = mCH341A_CMD_I2C_STREAM;
-                if (part_no == 0) { // Start packet
+                if (part_no == 0)
+                {
+                    // Start packet
                     *outptr++ = mCH341A_CMD_I2C_STM_STA;
                 }
                 *outptr++ = mCH341A_CMD_I2C_STM_OUT | to_write;
@@ -768,7 +795,9 @@ int MainWindow::writeActBt()
                 i2cBufPtr += to_write;
                 page_size_left -= to_write;
 
-                if (page_size_left == 0) { // Stop packet
+                if (page_size_left == 0)
+                {
+                    // Stop packet
                     *outptr++ = mCH341A_CMD_I2C_STM_STO;
                 }
                 *outptr++ = mCH341A_CMD_I2C_STM_END;
@@ -776,7 +805,8 @@ int MainWindow::writeActBt()
             }
             uint32_t payload_size = outptr - ch341outBuffer;
 
-            for(i=0; i < payload_size; i++) {
+            for(i=0; i < payload_size; i++)
+            {
 
             }
             //fprintf(debugout, "\n");
@@ -784,7 +814,8 @@ int MainWindow::writeActBt()
             ret = libusb_bulk_transfer(devHandle, BULK_WRITE_ENDPOINT,
                                        ch341outBuffer, payload_size, &actuallen, DEFAULT_TIMEOUT);
 
-            if(ret < 0) {
+            if(ret < 0)
+            {
                 pr_error = pr_error + "Failed to write to EEPROM\n";
                 return -1;
             }
@@ -798,13 +829,12 @@ int MainWindow::writeActBt()
 
             ret = libusb_bulk_transfer(devHandle, BULK_WRITE_ENDPOINT, ch341outBuffer, 3, &actuallen, DEFAULT_TIMEOUT);
 
-            if(ret < 0) {
+            if(ret < 0)
+            {
                 fprintf(stderr, "Failed to write to EEPROM: '%s'\n", strerror(-ret));
                 return -1;
             }
-
         }
-
     }
     else //ans_info.ans_byte -->0
     {
@@ -816,23 +846,21 @@ int MainWindow::writeActBt()
     //CLOSE DEVICE
     if (byteoffset>0)
     {
-        //       a.setValue(100*byteoffset/chipsize);
+        //a.setValue(100*byteoffset/chipsize);
     }
     ans_info = close_ch341a(devHandle);
     pr_error = pr_error + "\n" + ans_info.ans_txt;
     programmer->setTxt(pr_error);
 
-
-
-
     return 0;
 }
+
 void MainWindow::selectActBt()
 {
     eepromSize->show();
     //    QMessageBox::about(this, "Title", QString::number(0));
-
 }
+
 void MainWindow::programmerActBt()
 {
     answer ans_info;
@@ -852,9 +880,8 @@ void MainWindow::programmerActBt()
     pr_error = pr_error + "\n" + ans_info.ans_txt;
     programmer->setTxt(pr_error);
     programmer->barNotshowing();
-
 }
-//
+
 void MainWindow::createActions()
 {
     openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
@@ -865,7 +892,6 @@ void MainWindow::createActions()
     readAct = new QAction(QIcon(":/images/read.png"), tr("&Read..."), this);
     readAct->setStatusTip(tr("Read from EEPROM"));
     connect(readAct, SIGNAL(triggered()), this, SLOT(readActBt()));
-
 
     writeAct = new QAction(QIcon(":/images/write.png"), tr("&Write..."), this);
     writeAct->setStatusTip(tr("Write to EEPROM"));
@@ -909,7 +935,11 @@ void MainWindow::createActions()
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
-    connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+    connect(aboutAct, SIGNAL(triggered()),  this,   SLOT(about()));
+
+    aboutQtAct = new QAction(tr("&About Qt"), this);
+    aboutQtAct->setStatusTip(tr("About Qt"));
+    connect(aboutQtAct, &QAction::triggered,    this,   &QApplication::aboutQt);
 
     findAct = new QAction(QIcon(":/images/find.png"), tr("&Find/Replace"), this);
     findAct->setShortcuts(QKeySequence::Find);
@@ -928,10 +958,6 @@ void MainWindow::createActions()
     programmerAct = new QAction(tr("&Programmer"), this);
     programmerAct->setStatusTip(tr("Progmammer connecting info"));
     connect(programmerAct, SIGNAL(triggered()), this, SLOT(programmerActBt()));
-
-
-
-    //
 }
 
 void MainWindow::createMenus()
@@ -963,12 +989,11 @@ void MainWindow::createMenus()
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
-    //helpMenu->addAction(aboutQtAct);
+    helpMenu->addAction(aboutQtAct);
 }
 
 void MainWindow::createStatusBar()
 {
-    //
     // Chip model label
     lbChipTypeName = new QLabel();
     lbChipTypeName->setText(tr("Chip:"));
@@ -1033,13 +1058,14 @@ void MainWindow::createToolBars()
     editToolBar->addAction(readAct);
     editToolBar->addAction(writeAct);
     //
-
+    editToolBar->addAction(writeAct);
 }
 
 void MainWindow::loadFile(const QString &fileName)
 {
     file.setFileName(fileName);
-    if (!hexEdit->setData(file)) {
+    if (!hexEdit->setData(file))
+    {
         QMessageBox::warning(this, tr("QHexEdit"),
                              tr("Cannot read file %1:\n%2.")
                              .arg(fileName)
@@ -1061,7 +1087,6 @@ void MainWindow::loadFile(const QString &fileName)
     QMessageBox::about(this, "Title", QString(chipname));
     MainWindow::setSize(chipsize);
     MainWindow::setChipType(chipname);
-
     //****************************************************************
 }
 
@@ -1106,7 +1131,8 @@ bool MainWindow::saveFile(const QString &fileName)
     }
     QApplication::restoreOverrideCursor();
 
-    if (!ok) {
+    if (!ok)
+    {
         QMessageBox::warning(this, tr("QHexEdit"),
                              tr("Cannot write file %1.")
                              .arg(fileName));

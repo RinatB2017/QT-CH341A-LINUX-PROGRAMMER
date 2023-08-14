@@ -7,7 +7,7 @@
 #include "qhexedit.h"
 
 namespace Ui {
-    class EepromSize;
+class EepromSize;
 }
 
 class EepromSize : public QDialog
@@ -26,8 +26,7 @@ signals:
     void listWidget_click(QString chiptext);
 
 private slots:
-    void on_buttonBox_accepted();
-    void listWidget_clicked();
+    void lw_clicked();
 
 private:
 
