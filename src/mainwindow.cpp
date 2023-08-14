@@ -274,7 +274,6 @@ answer close_ch341a(struct libusb_device_handle *devHandle)
         ans.ans_txt = ans.ans_txt + "Closed USB device\n";
         libusb_exit(NULL);
         ans.ans_byte = -1;
-
     }
     return ans;
 }
@@ -507,13 +506,13 @@ void MainWindow::init()
 {
     setAttribute(Qt::WA_DeleteOnClose);
     optionsDialog = new OptionsDialog(this);
-    connect(optionsDialog, SIGNAL(accepted()), this, SLOT(optionsAccepted()));
+    connect(optionsDialog,  &OptionsDialog::accepted,   this,   &MainWindow::optionsAccepted);
     isUntitled = true;
 
     hexEdit = new QHexEdit;
     setCentralWidget(hexEdit);
-    connect(hexEdit, SIGNAL(overwriteModeChanged(bool)), this, SLOT(setOverwriteMode(bool)));
-    connect(hexEdit, SIGNAL(dataChanged()), this, SLOT(dataChanged()));
+    connect(hexEdit,    &QHexEdit::overwriteModeChanged,    this,   &MainWindow::setOverwriteMode);
+    connect(hexEdit,    &QHexEdit::dataChanged,             this,   &MainWindow::dataChanged);
     searchDialog = new SearchDialog(hexEdit, this);
     //
     eepromSize = new EepromSize(this);
